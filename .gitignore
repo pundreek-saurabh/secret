@@ -1,1 +1,5 @@
 node_modules
+
+#dotenv environment variable file get ignored
+.env
+.env.test

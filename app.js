@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
@@ -5,12 +6,26 @@ const mongoose = require("mongoose");
 const encrypt = require("mongoose-encryption");
 
 const app = express();
+console.log(process.env.API_KEY);
+console.log(process.env.SECRET);
 
 app.use(express.static("public"));
 app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded(
+    {
+        extended: true
+    }));
 
 mongoose.connect("mongodb://localhost:27017/userDB");
+
+// Schema for simple uses:-
+
+// const userSchema({
+//     email: String,
+//     password: String
+// });
+
+// Schema for encrypted mongoose (writing method 1):-
 
 // var Schema = mongoose.Schema
 
@@ -19,13 +34,15 @@ mongoose.connect("mongodb://localhost:27017/userDB");
 //     password: String
 // });
 
+// // Schema for encrypted mongoose (writing method 2):-
+
 const userSchema = new mongoose.Schema({
     email: String,
     password: String
 });
 
-const secret = "This is our little secret.";
-userSchema.plugin(encrypt, {secret: secret, encryptedFields:["password"] });
+
+userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields:["password"] });
 
 
 const User = new mongoose.model("User", userSchema);
